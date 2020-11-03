@@ -1,0 +1,41 @@
+{
+  "type": "datasource",
+  "name": "grafana-riemann-websocket-datasource",
+  "id": "ccin-2-p-3-grafana-riemann-websocket-datasource",
+  "metrics": true,
+  "info": {
+    "description": "Subscribe to riemann.io websocket streams!",
+    "author": {
+      "name": "Fᴀʙɪᴇɴ Wᴇʀɴʟɪ",
+      "url": "https://[::1]/"
+    },
+    "keywords": [
+      "riemann",
+      "websocket",
+      "streaming",
+      "datasource",
+      "clojure"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/grafana/simple-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/simple-datasource/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "6.5.x",
+    "plugins": []
+  }
+}
