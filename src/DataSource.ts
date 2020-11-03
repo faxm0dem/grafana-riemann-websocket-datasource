@@ -37,7 +37,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       // step determines how close in time (ms) the points will be to each other.
       const step = duration / 1000;
       for (let t = 0; t < duration; t += step) {
-        frame.add({ time: from + t, value: Math.sin((4 * Math.PI * t) / duration) });
+        frame.add({ time: from + t, value: Math.sin((2 * Math.PI * query.frequency * t) / duration) });
       }
       return frame;
     });
