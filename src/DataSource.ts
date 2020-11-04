@@ -1,53 +1,76 @@
 import defaults from 'lodash/defaults';
 
 import {
+  CircularDataFrame,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
-  MutableDataFrame,
   FieldType,
 } from '@grafana/data';
 
 import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 
+import { Observable, merge } from 'rxjs';
+
+interface MyHash {
+  [details: string]: number;
+}
+
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
-  resolution: number;
+  baseUrl: string;
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    this.resolution = instanceSettings.jsonData.resolution || 1000.0;
+    this.baseUrl = instanceSettings.jsonData.baseUrl || 'ws://localhost:5556';
   }
-
-  async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
-    const { range } = options;
-    const from = range!.from.valueOf();
-    const to = range!.to.valueOf();
-
-    // Return a constant for each query.
-    const data = options.targets.map(target => {
+  query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
+    const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
-      const frame = new MutableDataFrame({
-        refId: query.refId,
-        fields: [
-          { name: 'time', type: FieldType.time },
-          { name: 'value', type: FieldType.number },
-        ],
+      const Uri = this.baseUrl.concat('/index?subscribe=true&query=', query.queryText || '');
+      const ws = new WebSocket(encodeURI(Uri));
+      let series: CircularDataFrame[] = [];
+      let seriesList: MyHash = {};
+      let seriesIndex = 0;
+      console.log(`[message] Processing query: ${Uri}`);
+      return new Observable<DataQueryResponse>(subscriber => {
+        ws.onmessage = function(event) {
+          const parsedEvent = JSON.parse(event.data);
+          const service = parsedEvent.service;
+          let frame: CircularDataFrame;
+          if (service in seriesList) {
+            // console.log(`[message] we already know about service ${service} and index ${seriesList[service]}`);
+            frame = series[seriesList[service]]; // get service's frame
+          } else {
+            // console.log(`[message] adding service ${service}`);
+            seriesList[service] = seriesIndex++; // increment index
+            frame = new CircularDataFrame({
+              append: 'tail',
+              capacity: 100,
+            });
+            frame.refId = query.refId;
+            frame.addField({ name: 'time', type: FieldType.time });
+            frame.addField({ name: service, type: FieldType.number });
+            series.push(frame);
+          }
+          var f: Record<string, any> = {};
+          f = {
+            time: parsedEvent.time,
+            metric: parsedEvent.metric,
+            service: parsedEvent.service,
+          };
+          f[service] = parsedEvent.metric;
+          frame.add(f);
+          subscriber.next({
+            data: series,
+            key: query.refId,
+          });
+        };
       });
-      // duration of the time range, in milliseconds.
-      const duration = to - from;
-
-      // step determines how close in time (ms) the points will be to each other.
-      const step = duration / this.resolution;
-      for (let t = 0; t < duration; t += step) {
-        frame.add({ time: from + t, value: Math.sin((2 * Math.PI * query.frequency * t) / duration) });
-      }
-      return frame;
     });
 
-    return { data };
+    return merge(...streams);
   }
-
   async testDatasource() {
     // Implement a health check for your data source.
     return {

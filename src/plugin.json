@@ -3,6 +3,8 @@
   "name": "grafana-riemann-websocket-datasource",
   "id": "ccin-2-p-3-grafana-riemann-websocket-datasource",
   "metrics": true,
+  "streaming": true,
+  "live": true,
   "info": {
     "description": "Subscribe to riemann.io websocket streams!",
     "author": {
