@@ -12,8 +12,11 @@ import {
 import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
+  resolution: number;
+
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
+    this.resolution = instanceSettings.jsonData.resolution || 1000.0;
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
@@ -35,7 +38,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       const duration = to - from;
 
       // step determines how close in time (ms) the points will be to each other.
-      const step = duration / 1000;
+      const step = duration / this.resolution;
       for (let t = 0; t < duration; t += step) {
         frame.add({ time: from + t, value: Math.sin((2 * Math.PI * query.frequency * t) / duration) });
       }

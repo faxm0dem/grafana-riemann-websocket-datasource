@@ -10,6 +10,14 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
+  onResolutionChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData = {
+      ...options.jsonData,
+      resolution: parseFloat(event.target.value),
+    };
+    onOptionsChange({ ...options, jsonData });
+  };
   onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
@@ -53,6 +61,12 @@ export class ConfigEditor extends PureComponent<Props, State> {
     return (
       <div className="gf-form-group">
         <div className="gf-form">
+          <FormField
+            label="Resolution"
+            onChange={this.onResolutionChange}
+            value={jsonData.resolution || ''}
+            placeholder="Enter a number"
+          />
           <FormField
             label="Path"
             labelWidth={6}
