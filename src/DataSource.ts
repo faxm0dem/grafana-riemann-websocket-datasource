@@ -19,6 +19,15 @@ interface MyHash {
   [details: string]: number;
 }
 
+// source https://stackoverflow.com/a/11426309/2122722
+var cons = {
+  log: console.log,
+  debug: function(...arg: any) {},
+  info: console.log,
+  warn: console.log,
+  error: console.log,
+};
+
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   baseUrl: string;
 
@@ -33,17 +42,17 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesIndex = 0;
-      console.log(`[message] Processing query: ${query.queryText}`);
+      cons.info(`[message] Processing query: ${query.queryText}`);
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
           const service = parsedEvent.service;
           let frame: CircularDataFrame;
           if (service in seriesList) {
-            // console.log(`[message] we already know about service ${service} and index ${seriesList[service]}`);
+            cons.debug(`[message] we already know about service ${service} and index ${seriesList[service]}`);
             frame = series[seriesList[service]]; // get service's frame
           } else {
-            // console.log(`[message] adding service ${service}`);
+            cons.debug(`[message] adding service ${service}`);
             seriesList[service] = seriesIndex++; // increment index
             frame = new CircularDataFrame({
               append: 'tail',
@@ -100,6 +109,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   }
   newRiemannWebSocket(queryText: string): WebSocket {
     const Uri = this.baseUrl.concat('/index?subscribe=true&query=', queryText);
+    cons.info(`[message] Opening new WS: ${Uri}`);
     return new WebSocket(encodeURI(Uri));
   }
 }
