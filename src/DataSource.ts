@@ -1,3 +1,5 @@
+// vim: expandtab ts=2
+
 import defaults from 'lodash/defaults';
 
 import {
@@ -27,12 +29,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
     const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
-      const Uri = this.baseUrl.concat('/index?subscribe=true&query=', query.queryText || '');
-      const ws = new WebSocket(encodeURI(Uri));
+      const ws = this.newRiemannWebSocket(query.queryText || '');
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesIndex = 0;
-      console.log(`[message] Processing query: ${Uri}`);
+      console.log(`[message] Processing query: ${query.queryText}`);
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
@@ -71,11 +72,34 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
     return merge(...streams);
   }
-  async testDatasource() {
-    // Implement a health check for your data source.
-    return {
-      status: 'success',
-      message: 'Success',
-    };
+  async testDatasource(): Promise<any> {
+    let ws = this.newRiemannWebSocket('');
+    let promise = new Promise(function(resolve, reject) {
+      ws.onerror = function(event) {
+        reject({
+          status: 'error',
+          message: `WebSocket Error: ${JSON.stringify(event)}`,
+        });
+      };
+      ws.onopen = function(event) {
+        resolve({
+          status: 'success',
+          message: `WebSocket Success: ${JSON.stringify(event)}`,
+        });
+      };
+    });
+    promise.then(
+      function(result) {
+        return result;
+      },
+      function(error) {
+        return error;
+      }
+    );
+    return promise;
+  }
+  newRiemannWebSocket(queryText: string): WebSocket {
+    const Uri = this.baseUrl.concat('/index?subscribe=true&query=', queryText);
+    return new WebSocket(encodeURI(Uri));
   }
 }
