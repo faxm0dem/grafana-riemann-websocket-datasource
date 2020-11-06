@@ -1,3 +1,4 @@
+// vim: expandtab ts=2
 import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
@@ -17,6 +18,13 @@ export class ConfigEditor extends PureComponent<Props, State> {
       baseUrl: event.target.value,
     };
     onOptionsChange({ ...options, jsonData });
+  };
+
+  onFrameSizeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query, onRunQuery } = this.props;
+    onChange({ ...query, framesize: parseInt(event.target.value) });
+    // executes the query
+    onRunQuery();
   };
 
   // Secure field (only sent to the backend)
