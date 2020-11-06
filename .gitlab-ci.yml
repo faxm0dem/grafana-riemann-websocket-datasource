@@ -1,0 +1,13 @@
+image: node:14.15.0
+
+before_script:
+  - yarn install --cache-folder .yarn
+
+test:
+  stage: test
+  cache:
+    paths:
+    - node_modules/
+    - .yarn
+  script:
+    - yarn dev 

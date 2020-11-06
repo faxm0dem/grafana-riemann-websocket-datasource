@@ -1,13 +1,20 @@
-# Grafana Data Source Plugin Template
+# Grafana Riemann streaming datasource
 
 [![CircleCI](https://circleci.com/gh/faxm0dem/grafana-riemann-websocket-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/faxm0dem/grafana-riemann-websocket-datasource/tree/master)
 
-This template is a starting point for building Grafana Data Source Plugins
+This Grafana plugin implements a streaming [Riemann](https://riemann.io/) datasource
 
-## What is Grafana Data Source Plugin?
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+## What is Riemann streaming datasource plugin
+
+This datasource connects to a riemann server's websocket and subscribes to a stream.
 
 ## Getting started
+
+0. Have a riemann instance ready with websockets enabled
+```clojure
+(ws-server)
+```
+
 1. Install dependencies
 ```BASH
 yarn install
@@ -26,6 +33,11 @@ yarn build
 ```
 
 ## Learn more
+- [Riemann](https://riemann.io)
+- [Grafana developer guide](https://github.com/grafana/grafana/blob/master/contribute/developer-guide.md)
+- [Build a streaming data source plugin](https://grafana.com/docs/grafana/latest/developers/plugins/build-a-streaming-data-source-plugin/)
+- [Javascript websockets](https://javascript.info/websocket)
+- [Grafana dataframe documentation](https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/)
 - [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
 - [Grafana documentation](https://grafana.com/docs/)
 - [Grafana Tutorials](https://grafana.com/tutorials/) - Grafana Tutorials are step-by-step guides that help you make the most of Grafana
