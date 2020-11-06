@@ -2,10 +2,16 @@ import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface MyQuery extends DataQuery {
   queryText?: string;
+  maxPoints: number;
+  maxSeries: number;
+  maxFreq: number;
 }
 
 export const defaultQuery: Partial<MyQuery> = {
   queryText: 'tagged "riemann"',
+  maxPoints: 100,
+  maxSeries: 10,
+  maxFreq: 0.1,
 };
 
 /**
@@ -13,7 +19,6 @@ export const defaultQuery: Partial<MyQuery> = {
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
   baseUrl?: string;
-  max;
 }
 
 /**

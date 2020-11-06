@@ -56,7 +56,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             seriesList[service] = seriesIndex++; // increment index
             frame = new CircularDataFrame({
               append: 'tail',
-              capacity: 100,
+              capacity: query.maxPoints,
             });
             frame.refId = query.refId;
             frame.addField({ name: 'time', type: FieldType.time });
