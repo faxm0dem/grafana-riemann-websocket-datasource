@@ -23,10 +23,19 @@ interface MyHash {
 var cons = {
   log: console.log,
   debug: function(...arg: any) {},
-  info: console.log,
+  info: function(...arg: any) {},
   warn: console.log,
   error: console.log,
 };
+
+function getSeriesId(event: any, ...keys: string[]): string {
+  let parsedEvent = JSON.parse(event.data);
+  let fields: string[] = keys.map(function(key) {
+    return parsedEvent[key];
+  });
+  let id: string = fields.join('-');
+  return id;
+}
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   baseUrl: string;
@@ -46,25 +55,25 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
-          const service = parsedEvent.service;
+          const seriesId = getSeriesId(event, 'host', 'service');
           let frame: CircularDataFrame;
-          if (service in seriesList) {
-            cons.debug(`[message] we already know about service ${service} and index ${seriesList[service]}`);
-            frame = series[seriesList[service]]; // get service's frame
+          if (seriesId in seriesList) {
+            cons.debug(`[message] we already know about series ${seriesId} having index ${seriesList[seriesId]}`);
+            frame = series[seriesList[seriesId]]; // get series' frame
           } else {
             if (seriesIndex < query.maxSeries) {
-              cons.debug(`[message] adding service ${service}`);
-              seriesList[service] = seriesIndex++; // increment index
+              cons.debug(`[message] adding series ${seriesId}`);
+              seriesList[seriesId] = seriesIndex++; // increment index
               frame = new CircularDataFrame({
                 append: 'tail',
                 capacity: query.maxPoints,
               });
               frame.refId = query.refId;
               frame.addField({ name: 'time', type: FieldType.time });
-              frame.addField({ name: service, type: FieldType.number });
+              frame.addField({ name: seriesId, type: FieldType.number });
               series.push(frame);
             } else {
-              cons.info(`[message] MaxSeries reached! Not adding service ${service}`);
+              cons.info(`[message] MaxSeries reached! Not adding series ${seriesId}`);
               return;
             }
           }
@@ -74,7 +83,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             metric: parsedEvent.metric,
             service: parsedEvent.service,
           };
-          f[service] = parsedEvent.metric;
+          f[seriesId] = parsedEvent.metric;
           frame.add(f);
           subscriber.next({
             data: series,
