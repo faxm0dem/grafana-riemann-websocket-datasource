@@ -52,16 +52,21 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             cons.debug(`[message] we already know about service ${service} and index ${seriesList[service]}`);
             frame = series[seriesList[service]]; // get service's frame
           } else {
-            cons.debug(`[message] adding service ${service}`);
-            seriesList[service] = seriesIndex++; // increment index
-            frame = new CircularDataFrame({
-              append: 'tail',
-              capacity: query.maxPoints,
-            });
-            frame.refId = query.refId;
-            frame.addField({ name: 'time', type: FieldType.time });
-            frame.addField({ name: service, type: FieldType.number });
-            series.push(frame);
+            if (seriesIndex < query.maxSeries) {
+              cons.debug(`[message] adding service ${service}`);
+              seriesList[service] = seriesIndex++; // increment index
+              frame = new CircularDataFrame({
+                append: 'tail',
+                capacity: query.maxPoints,
+              });
+              frame.refId = query.refId;
+              frame.addField({ name: 'time', type: FieldType.time });
+              frame.addField({ name: service, type: FieldType.number });
+              series.push(frame);
+            } else {
+              cons.info(`[message] MaxSeries reached! Not adding service ${service}`);
+              return;
+            }
           }
           var f: Record<string, any> = {};
           f = {
