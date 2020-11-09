@@ -22,6 +22,7 @@ interface MyHash {
 // source https://stackoverflow.com/a/11426309/2122722
 var cons = {
   log: console.log,
+  trace: function(...arg: any) {},
   debug: function(...arg: any) {},
   info: function(...arg: any) {},
   warn: console.log,
@@ -50,6 +51,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       const ws = this.newRiemannWebSocket(query.queryText || '');
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
+      let seriesLastUpdate: MyHash = {};
       let seriesIndex = 0;
       cons.info(`[message] Processing query: ${query.queryText}`);
       return new Observable<DataQueryResponse>(subscriber => {
@@ -63,6 +65,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           } else {
             if (seriesIndex < query.maxSeries) {
               cons.debug(`[message] adding series ${seriesId}`);
+              seriesLastUpdate[seriesId] = new Date().getTime() - 1000.0 / query.maxFreq;
               seriesList[seriesId] = seriesIndex++; // increment index
               frame = new CircularDataFrame({
                 append: 'tail',
@@ -77,18 +80,24 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
               return;
             }
           }
-          var f: Record<string, any> = {};
-          f = {
-            time: parsedEvent.time,
-            metric: parsedEvent.metric,
-            service: parsedEvent.service,
-          };
-          f[seriesId] = parsedEvent.metric;
-          frame.add(f);
-          subscriber.next({
-            data: series,
-            key: query.refId,
-          });
+          const currentTime = new Date().getTime();
+          if (currentTime - seriesLastUpdate[seriesId] >= 1000.0 / query.maxFreq) {
+            var f: Record<string, any> = {};
+            f = {
+              time: parsedEvent.time,
+              metric: parsedEvent.metric,
+              service: parsedEvent.service,
+            };
+            f[seriesId] = parsedEvent.metric;
+            frame.add(f);
+            subscriber.next({
+              data: series,
+              key: query.refId,
+            });
+            seriesLastUpdate[seriesId] = currentTime;
+          } else {
+            cons.trace(`[message] MaxFreq reached! Dropping new data for series ${seriesId}`);
+          }
         };
       });
     });
