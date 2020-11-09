@@ -41,17 +41,17 @@ export class QueryEditor extends PureComponent<Props> {
     const { queryText, maxPoints, maxSeries, maxFreq, groupBy } = query;
 
     return (
-      <div className="gf-form">
+      <div className="gf-form-max-width-25">
         <FormField
-          labelWidth={16}
+          labelWidth={10}
           value={queryText || ''}
           onChange={this.onQueryTextChange}
           label="Query Text"
           tooltip="Riemann query. See test suite for examples https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj"
-          inputWidth={30}
+          inputWidth={100}
         />
         <FormField
-          labelWidth={16}
+          labelWidth={10}
           value={groupBy || ''}
           onChange={this.onGroupByChange}
           label="GroupBy"
@@ -59,7 +59,8 @@ export class QueryEditor extends PureComponent<Props> {
           inputWidth={16}
         />
         <FormField
-          width={4}
+          labelWidth={10}
+          width={10}
           value={maxPoints}
           onChange={this.onMaxPointsChange}
           label="MaxDataPoints"
@@ -67,6 +68,7 @@ export class QueryEditor extends PureComponent<Props> {
           tooltip="Maximum number of time series points returned"
         />
         <FormField
+          labelWidth={10}
           width={4}
           value={maxSeries}
           onChange={this.onMaxSeriesChange}
@@ -75,6 +77,7 @@ export class QueryEditor extends PureComponent<Props> {
           tooltip="Maximum number of time series"
         />
         <FormField
+          labelWidth={10}
           width={4}
           value={maxFreq}
           onChange={this.onMaxFreqChange}
