@@ -74,6 +74,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
               frame.refId = query.refId;
               frame.addField({ name: 'time', type: FieldType.time });
               frame.addField({ name: seriesId, type: FieldType.number });
+              frame.addField({ name: 'state', type: FieldType.string });
+              frame.addField({ name: 'host', type: FieldType.string });
+              frame.addField({ name: 'service', type: FieldType.string });
               series.push(frame);
             } else {
               cons.info(`[message] MaxSeries reached! Not adding series ${seriesId}`);
@@ -82,12 +85,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           }
           const currentTime = new Date().getTime();
           if (currentTime - seriesLastUpdate[seriesId] >= 1000.0 / query.maxFreq) {
-            var f: Record<string, any> = {};
-            f = {
-              time: parsedEvent.time,
-              metric: parsedEvent.metric,
-              service: parsedEvent.service,
-            };
+            var f: Record<string, any> = parsedEvent;
             f[seriesId] = parsedEvent.metric;
             frame.add(f);
             subscriber.next({
