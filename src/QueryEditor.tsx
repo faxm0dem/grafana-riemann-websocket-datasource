@@ -16,7 +16,10 @@ export class QueryEditor extends PureComponent<Props> {
     const { onChange, query } = this.props;
     onChange({ ...query, queryText: event.target.value });
   };
-
+  onGroupByChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, groupBy: event.target.value.split(',') });
+  };
   onMaxPointsChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, maxPoints: parseInt(event.target.value, 10) });
@@ -35,7 +38,7 @@ export class QueryEditor extends PureComponent<Props> {
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { queryText, maxPoints, maxSeries, maxFreq } = query;
+    const { queryText, maxPoints, maxSeries, maxFreq, groupBy } = query;
 
     return (
       <div className="gf-form">
@@ -46,6 +49,14 @@ export class QueryEditor extends PureComponent<Props> {
           label="Query Text"
           tooltip="Riemann query. See test suite for examples https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj"
           inputWidth={30}
+        />
+        <FormField
+          labelWidth={16}
+          value={groupBy || ''}
+          onChange={this.onGroupByChange}
+          label="GroupBy"
+          tooltip="Coma separated list of attributes to group series. Defaults to 'host,service'"
+          inputWidth={16}
         />
         <FormField
           width={4}

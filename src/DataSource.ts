@@ -55,7 +55,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
-          const seriesId = getSeriesId(event, 'host', 'service');
+          const seriesId = getSeriesId(event, ...query.groupBy);
           let frame: CircularDataFrame;
           if (seriesId in seriesList) {
             cons.debug(`[message] we already know about series ${seriesId} having index ${seriesList[seriesId]}`);
