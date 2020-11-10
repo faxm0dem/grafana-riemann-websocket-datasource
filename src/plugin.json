@@ -1,7 +1,7 @@
 {
   "type": "datasource",
-  "name": "grafana-riemann-websocket-datasource",
-  "id": "ccin-2-p-3-grafana-riemann-websocket-datasource",
+  "name": "Riemann streams",
+  "id": "ccin2p3-grafana-riemann-websocket-datasource",
   "metrics": true,
   "streaming": true,
   "live": true,
@@ -19,20 +19,20 @@
       "clojure"
     ],
     "logos": {
-      "small": "img/logo.svg",
-      "large": "img/logo.svg"
+      "small": "img/riemann.svg",
+      "large": "img/riemann.svg"
     },
     "links": [
       {
         "name": "Website",
-        "url": "https://github.com/grafana/simple-datasource"
+        "url": "https://github.com/faxm0dem/grafana-riemann-websocket-datasource"
       },
       {
         "name": "License",
-        "url": "https://github.com/grafana/simple-datasource/blob/master/LICENSE"
+        "url": "https://github.com/faxm0dem/grafana-riemann-websocket-datasource"
       }
     ],
-    "screenshots": [],
+    "screenshots": [{"name": "(streams)", "path": "img/grafana-riemann-streams.png"}],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
