@@ -12,7 +12,7 @@ export const defaultQuery: Partial<MyQuery> = {
   queryText: 'tagged "riemann"',
   maxPoints: 100,
   maxSeries: 10,
-  maxFreq: 0.1,
+  maxFreq: 1.0,
   groupBy: ['host', 'service'],
 };
 
