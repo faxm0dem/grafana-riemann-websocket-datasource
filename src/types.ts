@@ -7,6 +7,7 @@ export interface MyQuery extends DataQuery {
   maxFreq: number;
   groupBy?: string[];
   stringFields: string[];
+  numberFields: string[];
 }
 
 export const defaultQuery: Partial<MyQuery> = {
@@ -15,7 +16,8 @@ export const defaultQuery: Partial<MyQuery> = {
   maxSeries: 10,
   maxFreq: 1.0,
   groupBy: ['host', 'service'],
-  stringFields: ['host', 'service', 'state'],
+  stringFields: ['state'],
+  numberFields: ['metric'],
 };
 
 /**

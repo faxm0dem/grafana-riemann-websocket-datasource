@@ -72,8 +72,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
                 capacity: query.maxPoints,
               });
               frame.refId = query.refId;
+              frame.name = seriesId;
               frame.addField({ name: 'time', type: FieldType.time });
-              frame.addField({ name: seriesId, type: FieldType.number });
+              query.numberFields.map(field => {
+                frame.addField({ name: field, type: FieldType.number });
+              });
               query.stringFields.map(field => {
                 frame.addField({ name: field, type: FieldType.string });
               });
@@ -85,9 +88,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           }
           const currentTime = new Date().getTime();
           if (currentTime - seriesLastUpdate[seriesId] >= 1000.0 / query.maxFreq) {
-            var f: Record<string, any> = parsedEvent;
-            f[seriesId] = parsedEvent.metric;
-            frame.add(f);
+            frame.add(parsedEvent);
             subscriber.next({
               data: series,
               key: query.refId,
