@@ -2,11 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/faxm0dem/grafana-riemann-websocket-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/faxm0dem/grafana-riemann-websocket-datasource/tree/master)
 
-This Grafana plugin implements a streaming [Riemann](https://riemann.io/) datasource
+This Grafana plugin implements a streaming [Riemann](https://riemann.io/) datasource.
 
-## What is Riemann streaming datasource plugin
+## Purpose
 
-This datasource connects to a riemann server's websocket and subscribes to a stream.
+This datasource connects to a riemann server using websockets and subscribes to a stream.
 
 ![Animation showing timeseries being streamed to Grafana](img/grafana-riemann-streams.gif)
 
@@ -33,6 +33,62 @@ yarn watch
 ```BASH
 yarn build
 ```
+
+## Configuration
+
+### Query Text
+
+This is the query text that will define the websocket subscription.
+The riemann query language doesn't have proper documentation yet, but there are lots of examples on its [website](https://riemann.io)
+and on the [test suite](https://www.geeksforgeeks.org/data-types-in-typescript/).
+
+#### Examples
+
+```
+tagged "collectd" and plugin = "load"
+tagged "riemann"
+metric and state = "ok"
+metric = 42
+```
+
+### GroupBy
+
+Riemann will potentially send you a truckload of unrelated events, unless your query is specific enough.
+If you don't want those to end up in the same Grafana series, you have to decide which riemann fields or attributes uniquely identify
+your Grafana series. This is where `GroupBy` comes it. It will assign a unique name to each series based on the event's attributes.
+For instance if you use `GroupBy=host` all events sharing the same `host` riemann attribute will end up in the same Grafana series. So you'll get
+as many series as you have hosts. If you use `GroupBy=host,service` you'll get `numHosts * numSeries` series.
+
+How many series you'll get is however constrained by the parameter `MaxSeries`.
+
+### Max*
+
+To prevent your browser to die on you, the developers of the riemann Grafana plugin kindly implemented the `MaxSeries`, `MaxDataPoints` and `MaxFreq` parameters.
+
+### MaxSeries
+
+It will cause your browser to ignore events that don't match the first `MaxSeries` series. It doesn't mean it won't process them: once you subscribed to
+a riemann event stream, your browser will get hit by all events matching the query. But only the ones whose `GroupBy` clause matches the series identifier
+will get drawn on screen. The others will be ignored.
+
+### MaxDataPoints
+
+This parameter limits the number of data points per series that are kept in memory. So if you chose `MaxSeries=10` and `MaxDataPoints=1000` the Grafana panel in your browser will
+display at most `10000` points. Older points will be removed in favour of younger events in a FIFO fashion.
+
+### MaxFreq
+
+This parameter limits the number of data points added to your *series* every second. If you choose `MaxFreq=1` and two riemann events are consumed in less than a second, the plugin will ignore the second event. It will still process the websocket event, but will forget about it immediately. Again, this is per *series* so if you have `MaxSeries=10,MaxFreq=10` you'll get at most 100 points per second to be drawn on screen.
+
+### StringFields
+
+[Riemann events can contain many different attributes](https://riemann.io/concepts.html) along with `host`, `service`, `state` and `description`. This parameter
+lets you decide which will be injected as Grafana fields.
+
+### NumericFields
+
+Riemann events usually contain the `metric` field which stores the time series' value. But they also contail the `ttl` field which stores the event's expiration time.
+This parameter lets you provide a coma-separated list to specify which fields should be fetched and injected as numeric fields in Grafana. This defaults to `metric`.
 
 ## Learn more
 - [Riemann](https://riemann.io)
