@@ -20,6 +20,10 @@ export class QueryEditor extends PureComponent<Props> {
     const { onChange, query } = this.props;
     onChange({ ...query, groupBy: event.target.value.split(',') });
   };
+  onStringFieldsChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, stringFields: event.target.value.split(',') });
+  };
   onMaxPointsChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query, onRunQuery } = this.props;
     onChange({ ...query, maxPoints: parseInt(event.target.value, 10) });
@@ -38,7 +42,7 @@ export class QueryEditor extends PureComponent<Props> {
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { queryText, maxPoints, maxSeries, maxFreq, groupBy } = query;
+    const { queryText, maxPoints, maxSeries, maxFreq, groupBy, stringFields } = query;
 
     return (
       <div className="gf-form-max-width-25">
@@ -49,6 +53,14 @@ export class QueryEditor extends PureComponent<Props> {
           label="Query Text"
           tooltip="Riemann query. See test suite for examples https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj"
           inputWidth={100}
+        />
+        <FormField
+          labelWidth={10}
+          value={stringFields || ''}
+          onChange={this.onStringFieldsChange}
+          label="StringFields"
+          tooltip="Coma separated list of attributes to store. Defaults to 'host,service,state'"
+          inputWidth={16}
         />
         <FormField
           labelWidth={10}

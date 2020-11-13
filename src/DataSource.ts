@@ -74,9 +74,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
               frame.refId = query.refId;
               frame.addField({ name: 'time', type: FieldType.time });
               frame.addField({ name: seriesId, type: FieldType.number });
-              frame.addField({ name: 'state', type: FieldType.string });
-              frame.addField({ name: 'host', type: FieldType.string });
-              frame.addField({ name: 'service', type: FieldType.string });
+              query.stringFields.map(field => {
+                frame.addField({ name: field, type: FieldType.string });
+              });
               series.push(frame);
             } else {
               cons.info(`[message] MaxSeries reached! Not adding series ${seriesId}`);
