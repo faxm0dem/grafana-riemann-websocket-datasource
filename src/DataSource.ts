@@ -21,6 +21,10 @@ interface MyHash {
   [details: string]: number;
 }
 
+interface IwsList {
+  [details: string]: WebSocket;
+}
+
 // source https://stackoverflow.com/a/11426309/2122722
 var cons = {
   log: console.log,
@@ -42,16 +46,26 @@ function getSeriesId(event: any, ...keys: string[]): string {
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   baseUrl: string;
+  wsList: IwsList;
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
     this.baseUrl = instanceSettings.jsonData.baseUrl || 'ws://localhost:5556';
+    this.wsList = {};
   }
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
     const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
       const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
-      const ws = this.newRiemannWebSocket(queryText || '');
+      let ws: WebSocket;
+      if (query.refId in this.wsList) {
+        cons.debug(`[message] closing existing ws from id ${query.refId}`);
+        ws = this.wsList[query.refId];
+        ws.close(1000, 'Grafana requested reopen');
+      }
+      ws = this.newRiemannWebSocket(queryText || '');
+      this.wsList[query.refId] = ws;
+      cons.debug(`[message] creating new ws from id ${query.refId}`);
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesLastUpdate: MyHash = {};

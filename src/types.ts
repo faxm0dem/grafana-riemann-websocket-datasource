@@ -8,6 +8,7 @@ export interface MyQuery extends DataQuery {
   groupBy?: string[];
   stringFields: string[];
   numberFields: string[];
+  webSocket?: WebSocket;
 }
 
 export const defaultQuery: Partial<MyQuery> = {
