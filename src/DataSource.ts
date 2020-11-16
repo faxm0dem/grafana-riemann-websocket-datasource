@@ -15,6 +15,8 @@ import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 
 import { Observable, merge } from 'rxjs';
 
+import { getTemplateSrv } from '@grafana/runtime';
+
 interface MyHash {
   [details: string]: number;
 }
@@ -48,12 +50,13 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
     const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
-      const ws = this.newRiemannWebSocket(query.queryText || '');
+      const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
+      const ws = this.newRiemannWebSocket(queryText || '');
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesLastUpdate: MyHash = {};
       let seriesIndex = 0;
-      cons.info(`[message] Processing query: ${query.queryText}`);
+      cons.info(`[message] Processing query: ${queryText}`);
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
