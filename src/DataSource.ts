@@ -60,13 +60,13 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
       let ws: WebSocket;
       if (queryText in this.wsList) {
-        cons.trace('Closing existing ws for query', queryText);
+        cons.trace('Using existing ws for query', queryText);
         ws = this.wsList[queryText];
-        ws.close(1000, 'Grafana requested reopen');
+      } else {
+        ws = this.newRiemannWebSocket(queryText || '');
+        this.wsList[queryText] = ws;
+        cons.trace('Creating new ws for query', queryText);
       }
-      ws = this.newRiemannWebSocket(queryText || '');
-      this.wsList[queryText] = ws;
-      cons.trace('Creating new ws for query', queryText);
       let series: CircularDataFrame[] = [];
       let seriesList: NumberHash = {};
       let seriesLastUpdate: NumberHash = {};
