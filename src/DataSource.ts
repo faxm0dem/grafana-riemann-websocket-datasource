@@ -17,7 +17,7 @@ import { Observable, merge } from 'rxjs';
 
 import { getTemplateSrv } from '@grafana/runtime';
 
-interface MyHash {
+interface NumberHash {
   [details: string]: number;
 }
 
@@ -68,8 +68,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       this.wsList[queryText] = ws;
       cons.trace('Creating new ws for query', queryText);
       let series: CircularDataFrame[] = [];
-      let seriesList: MyHash = {};
-      let seriesLastUpdate: MyHash = {};
+      let seriesList: NumberHash = {};
+      let seriesLastUpdate: NumberHash = {};
       let seriesIndex = 0;
       cons.info('Processing query ', queryText);
       return new Observable<DataQueryResponse>(subscriber => {
