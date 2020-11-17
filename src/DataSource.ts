@@ -28,7 +28,7 @@ interface IwsList {
 // source https://stackoverflow.com/a/11426309/2122722
 var cons = {
   log: console.log,
-  trace: function(...arg: any) {},
+  trace: console.log,
   debug: function(...arg: any) {},
   info: function(...arg: any) {},
   warn: console.log,
@@ -51,6 +51,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
     this.baseUrl = instanceSettings.jsonData.baseUrl || 'ws://localhost:5556';
+    // Track pool of websockets
     this.wsList = {};
   }
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
@@ -58,14 +59,14 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       const query = defaults(target, defaultQuery);
       const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
       let ws: WebSocket;
-      if (query.refId in this.wsList) {
-        cons.debug(`[message] closing existing ws from id ${query.refId}`);
-        ws = this.wsList[query.refId];
+      if (queryText in this.wsList) {
+        cons.trace(`[message] closing existing ws for query ${queryText}`);
+        ws = this.wsList[queryText];
         ws.close(1000, 'Grafana requested reopen');
       }
       ws = this.newRiemannWebSocket(queryText || '');
-      this.wsList[query.refId] = ws;
-      cons.debug(`[message] creating new ws from id ${query.refId}`);
+      this.wsList[queryText] = ws;
+      cons.trace(`[message] creating new ws for query ${queryText}`);
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesLastUpdate: MyHash = {};
