@@ -21,6 +21,24 @@ export const defaultQuery: Partial<MyQuery> = {
   numberFields: ['metric'],
 };
 
+export interface NumberHash {
+  [details: string]: number;
+}
+
+export interface IwsList {
+  [details: string]: WebSocket;
+}
+
+// source https://stackoverflow.com/a/11426309/2122722
+export const cons = {
+  log: console.log,
+  trace: console.log,
+  debug: function(...arg: any) {},
+  info: function(...arg: any) {},
+  warn: console.log,
+  error: console.log,
+};
+
 /**
  * These are options configured for each DataSource instance
  */

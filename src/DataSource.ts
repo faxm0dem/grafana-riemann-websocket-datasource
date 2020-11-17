@@ -1,6 +1,7 @@
 // vim: expandtab ts=2
 
 import defaults from 'lodash/defaults';
+// import './WebSocketOnMessage';
 
 import {
   CircularDataFrame,
@@ -11,29 +12,11 @@ import {
   FieldType,
 } from '@grafana/data';
 
-import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
+import { MyQuery, MyDataSourceOptions, defaultQuery, IwsList, NumberHash, cons } from './types';
 
 import { Observable, merge } from 'rxjs';
 
 import { getTemplateSrv } from '@grafana/runtime';
-
-interface NumberHash {
-  [details: string]: number;
-}
-
-interface IwsList {
-  [details: string]: WebSocket;
-}
-
-// source https://stackoverflow.com/a/11426309/2122722
-var cons = {
-  log: console.log,
-  trace: console.log,
-  debug: function(...arg: any) {},
-  info: function(...arg: any) {},
-  warn: console.log,
-  error: console.log,
-};
 
 function getSeriesId(event: any, ...keys: string[]): string {
   let parsedEvent = JSON.parse(event.data);
@@ -65,6 +48,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       } else {
         ws = this.newRiemannWebSocket(queryText || '');
         this.wsList[queryText] = ws;
+        query.webSocket = ws;
         cons.trace('Creating new ws for query', queryText);
       }
       let series: CircularDataFrame[] = [];
