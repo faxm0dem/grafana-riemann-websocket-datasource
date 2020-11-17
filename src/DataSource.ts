@@ -60,29 +60,29 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
       let ws: WebSocket;
       if (queryText in this.wsList) {
-        cons.trace(`[message] closing existing ws for query ${queryText}`);
+        cons.trace('Closing existing ws for query', queryText);
         ws = this.wsList[queryText];
         ws.close(1000, 'Grafana requested reopen');
       }
       ws = this.newRiemannWebSocket(queryText || '');
       this.wsList[queryText] = ws;
-      cons.trace(`[message] creating new ws for query ${queryText}`);
+      cons.trace('Creating new ws for query', queryText);
       let series: CircularDataFrame[] = [];
       let seriesList: MyHash = {};
       let seriesLastUpdate: MyHash = {};
       let seriesIndex = 0;
-      cons.info(`[message] Processing query: ${queryText}`);
+      cons.info('Processing query ', queryText);
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           const parsedEvent = JSON.parse(event.data);
           const seriesId = getSeriesId(event, ...query.groupBy);
           let frame: CircularDataFrame;
           if (seriesId in seriesList) {
-            cons.debug(`[message] we already know about series ${seriesId} having index ${seriesList[seriesId]}`);
+            cons.debug(`we already know about series ${seriesId} having index ${seriesList[seriesId]}`);
             frame = series[seriesList[seriesId]]; // get series' frame
           } else {
             if (seriesIndex < query.maxSeries) {
-              cons.debug(`[message] adding series ${seriesId}`);
+              cons.debug('Adding series ', seriesId);
               seriesLastUpdate[seriesId] = new Date().getTime() - 1000.0 / query.maxFreq;
               seriesList[seriesId] = seriesIndex++; // increment index
               frame = new CircularDataFrame({
@@ -100,7 +100,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
               });
               series.push(frame);
             } else {
-              cons.info(`[message] MaxSeries reached! Not adding series ${seriesId}`);
+              cons.info('MaxSeries reached! Not adding series ', seriesId);
               return;
             }
           }
@@ -113,7 +113,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             });
             seriesLastUpdate[seriesId] = currentTime;
           } else {
-            cons.trace(`[message] MaxFreq reached! Dropping new data for series ${seriesId}`);
+            cons.trace('MaxFreq reached! Dropping new data for series ', seriesId);
           }
         };
       });
@@ -149,7 +149,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   }
   newRiemannWebSocket(queryText: string): WebSocket {
     const Uri = this.baseUrl.concat('/index?subscribe=true&query=', queryText);
-    cons.info(`[message] Opening new WS: ${Uri}`);
+    cons.info('Opening new WS: ', Uri);
     return new WebSocket(encodeURI(Uri));
   }
 }
