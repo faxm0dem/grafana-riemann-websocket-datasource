@@ -32,7 +32,7 @@ export interface IwsList {
 // source https://stackoverflow.com/a/11426309/2122722
 export const cons = {
   log: console.log,
-  trace: console.log,
+  trace: function(...arg: any) {},
   debug: function(...arg: any) {},
   info: function(...arg: any) {},
   warn: console.log,
