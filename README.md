@@ -136,6 +136,8 @@ This parameter lets you provide a coma-separated list to specify which fields sh
 
 ## Caveats
 
+### Websocket connections
+
 The datasource works by opening one websocket per query. It reuses those sockets when dashboards are reloaded, or queries modified. It does so by tracking the queries by their `QueryText`. This has the following consequences:
 
 1. When creating two panels with the same query, or one panel with two identical queries, things might go wrong
@@ -148,6 +150,11 @@ So please follow these guidelines:
 1. Never use the same query more than once in the same dashboard. If you want to get two different representations of the same data, use Grafana's ["reuse queries" functionality](https://github.com/grafana/grafana/pull/16660) instead
 2. If you modify a query's parameters (*e.g.* `MaxFreq`) save, then reload the tab
 3. If you don't need your realtime dashboard, close the tab for your riemann server's sake
+
+### Mixed datasources
+
+Grafana offers the ability to add data from multiple datasources to a panel through the use of the `--Mixed--` datasource. Unfortunately this functionality doesn't work yet with streaming datasources.
+If you would like to use this functionality, please help us [increase this bug's visibility by adding a thumbs up](https://github.com/grafana/grafana/issues/28981)
 
 ## Learn more
 - [Riemann](https://riemann.io)
