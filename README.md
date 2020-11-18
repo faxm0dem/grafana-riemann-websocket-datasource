@@ -10,6 +10,11 @@ This datasource connects to a riemann server using websockets and subscribes to 
 
 ![Animation showing timeseries being streamed to Grafana](https://github.com/faxm0dem/grafana-riemann-websocket-datasource/blob/master/img/grafana-riemann-streams.gif)
 
+## Installation
+
+Use the releases link on github and download the `.zip`.
+Then just `unzip` it to your Grafana plugins folder.
+
 ## Configuring your Riemann backend
 
 For instructions on how to install a riemann server, refer to its [web site](https://riemann.io).
