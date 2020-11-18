@@ -1,6 +1,6 @@
 {
-  "name": "ccin2p3-grafana-riemann-websocket-datasource",
-  "version": "0.1.1",
+  "name": "ccin2p3-riemann-datasource",
+  "version": "0.1.2",
   "description": "Subscribe to riemann.io websocket streams!",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
@@ -8,6 +8,7 @@
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
+	"files": ["Development.md"],
   "author": "Fᴀʙɪᴇɴ Wᴇʀɴʟɪ",
   "license": "Apache-2.0",
   "devDependencies": {

@@ -8,35 +8,76 @@ This Grafana plugin implements a streaming [Riemann](https://riemann.io/) dataso
 
 This datasource connects to a riemann server using websockets and subscribes to a stream.
 
-![Animation showing timeseries being streamed to Grafana](img/grafana-riemann-streams.gif)
+![Animation showing timeseries being streamed to Grafana](https://github.com/faxm0dem/grafana-riemann-websocket-datasource/blob/master/img/grafana-riemann-streams.gif)
 
-## Getting started
+## Configuring your Riemann backend
 
 For instructions on how to install a riemann server, refer to its [web site](https://riemann.io).
-For building this plugin, there currently is a bug in the toolchain that prevents the correct execution. You need to run `rm -rf node_modules/@grafana/data/node_modules` in order for it to work. See the [github issue](https://github.com/grafana/grafana/issues/28395#issuecomment-714715586) for more information on that subject.
 
-0. Have a riemann instance ready with websockets enabled
+The only requirement for the plugin to work is to have a riemann instance ready with websockets enabled. This means you need a line in the form of:
+
 ```clojure
-(ws-server)
-```
-1. Install dependencies
-```BASH
-yarn install
-```
-2. Build plugin in development mode or run in watch mode
-```BASH
-yarn dev
-```
-or
-```BASH
-yarn watch
-```
-3. Build plugin in production mode
-```BASH
-yarn build
+(ws-server {:host "0.0.0.0" :port 5556})
 ```
 
-## Configuration
+As Riemann doesn't support secure websockets yet, we strongly advise you to tunnel it through your favourite web proxy. In any case, if Grafana is serving pages through `https`, you'll have no choice but to do so due to browser security enforcements. The way to go is traditionally to let riemann bind to localhost unsecured, and have the proxy listen to the server's public interface.
+
+```clojure
+(ws-server {:host "127.0.0.1" :port 5556})
+```
+
+For your convenience, here's a working configuration for HAProxy 1.5.18 (make sure you replace your public IP address):
+
+```
+#
+defaults
+  mode http
+  log global
+  option httplog
+  option  http-server-close
+  option  dontlognull
+  option  redispatch
+  option  contstats
+  retries 3
+  backlog 10000
+  timeout client          25s
+  timeout connect          5s
+  timeout server          25s
+  timeout tunnel        3600s
+  timeout http-keep-alive  1s
+  timeout http-request    15s
+  timeout queue           30s
+  timeout tarpit          60s
+  default-server inter 3s rise 2 fall 3
+  option forwardfor
+
+frontend ft_riemann
+  bind <PUBLIC_IP_ADDRESS>:5556 name http ssl crt /etc/riemann/ssl.pem
+  maxconn 10000
+  default_backend bk_riemann
+
+backend bk_riemann
+  balance roundrobin
+  server websrv1 localhost:5556 maxconn 10000 weight 10 cookie websrv1 check
+```
+
+## Datasource Configuration
+
+### Base URL
+
+Base URL to the riemann server.
+
+#### Examples
+
+```
+wss://my-haproxy-frontend:5556
+```
+
+```
+ws://my-insecure-riemann:5556
+```
+
+## Query Configuration
 
 ### Query Text
 
@@ -92,17 +133,18 @@ lets you decide which will be injected as Grafana fields.
 Riemann events usually contain the `metric` field which stores the time series' value. But they also contail the `ttl` field which stores the event's expiration time.
 This parameter lets you provide a coma-separated list to specify which fields should be fetched and injected as numeric fields in Grafana. This defaults to `metric`.
 
+
+## Caveats
+
+The datasource works by opening one websocket per query. It reuses those sockets when dashboards are reloaded, or queries modified. It does so by tracking the queries by their `QueryText`. This has the following consequences:
+
+1. When creating two panels with the same query, or one panel with two identical queries, things might go wrong
+2. When modifying a query's parameters (but not the text), you have to save the panel and reload it in order for changes to be taken into account (clicking Grafana's refresh button won't suffice)
+
+Also, the developer's haven't found a way (yet) to properly close the connections when leaving the dashboard. This means your websockets will remain open until you close the browser tab (or switch Grafana organization).
+
 ## Learn more
 - [Riemann](https://riemann.io)
-- [Grafana developer guide](https://github.com/grafana/grafana/blob/master/contribute/developer-guide.md)
-- [Build a streaming data source plugin](https://grafana.com/docs/grafana/latest/developers/plugins/build-a-streaming-data-source-plugin/)
-- [Javascript websockets](https://javascript.info/websocket)
-- [Grafana dataframe documentation](https://grafana.com/docs/grafana/latest/developers/plugins/data-frames/)
-- [Build a data source plugin tutorial](https://grafana.com/tutorials/build-a-data-source-plugin)
 - [Grafana documentation](https://grafana.com/docs/)
 - [Grafana Tutorials](https://grafana.com/tutorials/) - Grafana Tutorials are step-by-step guides that help you make the most of Grafana
-- [Grafana UI Library](https://developers.grafana.com/ui) - UI components to help you build interfaces using Grafana Design System
 
-## Resources that helped me
-
-- [Stackoverflow dynamically assign props to object in ts](https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript)
