@@ -12,11 +12,13 @@ This datasource connects to a riemann server using websockets and subscribes to 
 
 ## Getting started
 
+For instructions on how to install a riemann server, refer to its [web site](https://riemann.io).
+For building this plugin, there currently is a bug in the toolchain that prevents the correct execution. You need to run `rm -rf node_modules/@grafana/data/node_modules` in order for it to work. See the [github issue](https://github.com/grafana/grafana/issues/28395#issuecomment-714715586) for more information on that subject.
+
 0. Have a riemann instance ready with websockets enabled
 ```clojure
 (ws-server)
 ```
-
 1. Install dependencies
 ```BASH
 yarn install

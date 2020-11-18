@@ -5,7 +5,7 @@
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
-    "dev": "rm -rf node_modules/@grafana/data/node_modules; grafana-toolkit plugin:dev",
+    "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
   "author": "Fᴀʙɪᴇɴ Wᴇʀɴʟɪ",
