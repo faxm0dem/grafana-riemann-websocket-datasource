@@ -110,8 +110,8 @@ To prevent your browser to die on you, the developers of the riemann Grafana plu
 
 ### MaxSeries
 
-It will cause your browser to ignore events that don't match the first `MaxSeries` series. It doesn't mean it won't process them: once you subscribed to
-a riemann event stream, your browser will get hit by all events matching the query. But only the ones whose `GroupBy` clause matches the series identifier
+It will cause your browser to ignore events that don't match the *first* `MaxSeries` series. It doesn't mean it won't process them: once you subscribed to
+a riemann event stream, your browser will get hit by all events matching the query. But only the ones whose first `MaxSeries` `GroupBy` clause matches the series identifier
 will get drawn on screen. The others will be ignored.
 
 ### MaxDataPoints
@@ -126,12 +126,12 @@ This parameter limits the number of data points added to your *series* every sec
 ### StringFields
 
 [Riemann events can contain many different attributes](https://riemann.io/concepts.html) along with `host`, `service`, `state` and `description`. This parameter
-lets you decide which will be injected as Grafana fields.
+lets you decide which will be made available to panels as Grafana fields.
 
 ### NumericFields
 
 Riemann events usually contain the `metric` field which stores the time series' value. But they also contail the `ttl` field which stores the event's expiration time.
-This parameter lets you provide a coma-separated list to specify which fields should be fetched and injected as numeric fields in Grafana. This defaults to `metric`.
+This parameter lets you provide a coma-separated list to specify which fields should be fetched and made available as numeric fields in Grafana. This defaults to `metric`.
 
 
 ## Caveats
@@ -142,6 +142,12 @@ The datasource works by opening one websocket per query. It reuses those sockets
 2. When modifying a query's parameters (but not the text), you have to save the panel and reload it in order for changes to be taken into account (clicking Grafana's refresh button won't suffice)
 
 Also, the developer's haven't found a way (yet) to properly close the connections when leaving the dashboard. This means your websockets will remain open until you close the browser tab (or switch Grafana organization).
+
+So please follow these guidelines:
+
+1. Never use the same query more than once in the same dashboard. If you want to get two different representations of the same data, use Grafana's ["reuse queries" functionality](https://github.com/grafana/grafana/pull/16660) instead
+2. If you modify a query's parameters (*e.g.* `MaxFreq`) save, then reload the tab
+3. If you don't need your realtime dashboard, close the tab for your riemann server's sake
 
 ## Learn more
 - [Riemann](https://riemann.io)
