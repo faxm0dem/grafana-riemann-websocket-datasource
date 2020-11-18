@@ -52,7 +52,7 @@ export class QueryEditor extends PureComponent<Props> {
       <div className="gf-form-max-width-25">
         <FormField
           labelWidth={10}
-          value={queryText || 'tagged "riemann"'}
+          value={queryText || ''}
           onChange={this.onQueryTextChange}
           label="Query Text"
           tooltip="Riemann query. See test suite for examples https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj"
