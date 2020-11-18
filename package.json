@@ -1,5 +1,5 @@
 {
-  "name": "ccin2p3-grafana-riemann-websocket-datasource",
+  "name": "ccin2p3-riemann-datasource",
   "version": "0.1.1",
   "description": "Subscribe to riemann.io websocket streams!",
   "scripts": {

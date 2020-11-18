@@ -8,7 +8,7 @@ This Grafana plugin implements a streaming [Riemann](https://riemann.io/) dataso
 
 This datasource connects to a riemann server using websockets and subscribes to a stream.
 
-![Animation showing timeseries being streamed to Grafana](img/grafana-riemann-streams.gif)
+![Animation showing timeseries being streamed to Grafana](https://github.com/faxm0dem/grafana-riemann-websocket-datasource/blob/master/img/grafana-riemann-streams.gif)
 
 ## Getting started
 

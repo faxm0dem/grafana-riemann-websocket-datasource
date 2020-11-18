@@ -1,10 +1,9 @@
 {
   "type": "datasource",
   "name": "Riemann streams",
-  "id": "ccin2p3-grafana-riemann-websocket-datasource",
+  "id": "ccin2p3-riemann-datasource",
   "metrics": true,
   "streaming": true,
-  "live": true,
   "info": {
     "description": "Subscribe to riemann.io websocket streams!",
     "author": {
@@ -37,7 +36,7 @@
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaVersion": "6.5.x",
+    "grafanaDependency": "7.3.x",
     "plugins": []
   }
 }
