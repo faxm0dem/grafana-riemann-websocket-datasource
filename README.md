@@ -19,6 +19,23 @@ Then just `unzip` it to your Grafana plugins folder.
 
 For instructions on how to install a riemann server, refer to its [web site](https://riemann.io).
 
+### For the impatient
+
+Here's a minimal riemann configuration file if you want to test the grafana plugin:
+
+```
+; this will let you check riemann startup and websocket connections
+(logging/init {:file "/var/log/riemann/riemann.log"})
+; this will enable internal riemann instrumentation events at 1s interval, so you don't need to generate events yourself
+(instrumentation {:interval 1 :enabled? true})
+; this will enable the insecure ws server on localhost:5556
+(ws-server {:host "127.0.0.1" :port 5556})
+; this is to actually index events
+(let [index (index)] (streams index))
+```
+
+### Details
+
 The only requirement for the plugin to work is to have a riemann instance ready with websockets enabled. This means you need a line in the form of:
 
 ```clojure
@@ -65,6 +82,9 @@ backend bk_riemann
   balance roundrobin
   server websrv1 localhost:5556 maxconn 10000 weight 10 cookie websrv1 check
 ```
+
+You'll also need an index, or else the datasource will never see any events.
+
 
 ## Datasource Configuration
 
