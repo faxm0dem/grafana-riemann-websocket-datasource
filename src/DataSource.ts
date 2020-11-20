@@ -37,6 +37,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     // Track pool of websockets
     this.wsList = {};
   }
+
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
     const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
