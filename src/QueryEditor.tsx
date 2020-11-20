@@ -58,7 +58,7 @@ export class QueryEditor extends PureComponent<Props> {
             label="Query text"
             tooltip="Riemann query. See test suite for examples https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj"
           >
-            <Input value={queryText || ''} width={25} onChange={this.onQueryTextChange} />
+            <Input value={queryText || ''} width={100} onChange={this.onQueryTextChange} />
           </InlineField>
         </InlineFieldRow>
         <InlineFieldRow>
