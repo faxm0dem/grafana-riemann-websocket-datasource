@@ -9,7 +9,7 @@
     "sign": "grafana-toolkit plugin:sign",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
-	"files": ["Development.md"],
+  "files": ["Development.md"],
   "author": "Fᴀʙɪᴇɴ Wᴇʀɴʟɪ",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -23,5 +23,8 @@
   },
   "engines": {
     "node": ">=12 <15"
+  },
+  "resolutions": {
+    "rxjs": "6.6.3"
   }
 }
