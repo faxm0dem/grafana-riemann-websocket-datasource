@@ -12,8 +12,19 @@ This datasource connects to a riemann server using websockets and subscribes to 
 
 ## Installation
 
-Use the releases link on github and download the `.zip`.
+### Latest published on grafana.com
+
+```
+grafana-cli plugins install ccin2p3-riemann-datasource
+```
+
+Or use the releases link on github and download the `.zip`.
 Then just `unzip` it to your Grafana plugins folder.
+
+### Roll your own
+
+You can also build your own using `yarn build` and moving the `dist` folder to your grafana plugins
+directory under the name `ccin2p3-riemann-datasource`.
 
 ## Configuring your Riemann backend
 
