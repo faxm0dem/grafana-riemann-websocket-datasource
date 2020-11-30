@@ -119,7 +119,7 @@ ws://my-insecure-riemann:5556
 
 This is the query text that will define the websocket subscription.
 The riemann query language doesn't have proper documentation yet, but there are lots of examples on its [website](https://riemann.io)
-and on the [test suite](https://www.geeksforgeeks.org/data-types-in-typescript/).
+and on the [test suite](https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj).
 
 #### Examples
 
