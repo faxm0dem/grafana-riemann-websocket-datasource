@@ -59,7 +59,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       cons.info('Processing query ', queryText);
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
-          const parsedEvent = JSON.parse(event.data);
+          var parsedEvent = JSON.parse(event.data);
+          parsedEvent['time'] = new Date(parsedEvent['time']).getTime();
           const seriesId = getSeriesId(event, ...query.groupBy);
           let frame: CircularDataFrame;
           if (seriesId in seriesList) {
