@@ -10,6 +10,7 @@ import {
   DataSourceApi,
   DataSourceInstanceSettings,
   FieldType,
+  LoadingState,
 } from '@grafana/data';
 
 import { MyQuery, MyDataSourceOptions, defaultQuery, IwsList, NumberHash, cons } from './types';
@@ -96,6 +97,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             subscriber.next({
               data: series,
               key: query.refId,
+              state: LoadingState.Streaming,
             });
             seriesLastUpdate[seriesId] = currentTime;
           } else {
