@@ -19,7 +19,12 @@ grafana-cli plugins install ccin2p3-riemann-datasource
 ```
 
 Or use the releases link on github and download the `.zip`.
-Then just `unzip` it to your Grafana plugins folder.
+Then just `unzip` it to your Grafana plugins folder or run the following:
+
+```
+version=0.1.5
+grafana-cli --pluginUrl ./ccin2p3-riemann-datasource-${version}.zip plugins install ccin2p3-riemann-datasource
+```
 
 ### Roll your own
 
