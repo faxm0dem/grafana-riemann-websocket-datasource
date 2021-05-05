@@ -1,6 +1,6 @@
 {
   "name": "ccin2p3-riemann-datasource",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Subscribe to riemann.io websocket streams!",
   "scripts": {
     "build": "grafana-toolkit plugin:build",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2021-04-30 Release v0.1.5
+
+* Add support for events with numeric time (in seconds)
+  This makes this plugin also compatible with Mirabelle
+  https://github.com/mcorbin/mirabelle
+
 ## 2021-01-28 Release v0.1.4
 
 * Fix time scrolling in Grafana 7.4.x

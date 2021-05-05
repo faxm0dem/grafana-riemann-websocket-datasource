@@ -61,7 +61,17 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       return new Observable<DataQueryResponse>(subscriber => {
         ws.onmessage = function(event) {
           var parsedEvent = JSON.parse(event.data);
-          parsedEvent['time'] = new Date(parsedEvent['time']).getTime();
+          var typeOfTime = typeof parsedEvent['time'];
+          if (typeOfTime === 'number') {
+            // Mirabelle sends time as (fractional) seconds
+            parsedEvent['time'] *= 1000;
+            // Riemann sends time as Isodate string
+          } else if (typeOfTime === 'string') {
+            parsedEvent['time'] = new Date(parsedEvent['time']).getTime();
+            // In any other case, use current time
+          } else {
+            parsedEvent['time'] = new Date().getTime();
+          }
           const seriesId = getSeriesId(event, ...query.groupBy);
           let frame: CircularDataFrame;
           if (seriesId in seriesList) {
