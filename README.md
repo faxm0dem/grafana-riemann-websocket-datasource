@@ -126,6 +126,8 @@ This is the query text that will define the websocket subscription.
 The riemann query language doesn't have proper documentation yet, but there are lots of examples on its [website](https://riemann.io)
 and on the [test suite](https://github.com/riemann/riemann/blob/master/test/riemann/query_test.clj).
 
+If you use variable interpolation and use multiple selections, make sure to use the regexp match.
+
 #### Examples
 
 ```
@@ -133,6 +135,12 @@ tagged "collectd" and plugin = "load"
 tagged "riemann"
 metric and state = "ok"
 metric = 42
+```
+
+```
+service ~= "$service"
+# When multiple services are selected, this will expand to
+# service ~= "service1|service2|service3"
 ```
 
 ### GroupBy

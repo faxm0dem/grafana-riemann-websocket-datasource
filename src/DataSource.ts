@@ -42,7 +42,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   query(options: DataQueryRequest<MyQuery>): Observable<DataQueryResponse> {
     const streams = options.targets.map(target => {
       const query = defaults(target, defaultQuery);
-      const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars);
+      const queryText = getTemplateSrv().replace(query.queryText, options.scopedVars, 'pipe');
       let ws: WebSocket;
       if (queryText in this.wsList) {
         cons.trace('Using existing ws for query', queryText);

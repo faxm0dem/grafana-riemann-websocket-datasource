@@ -1,5 +1,9 @@
 # Changelog
 
+## 2022-09-21 Release v0.1.6
+
+* Improve variable handling by interpolating multiple selections as "regex"
+
 ## 2021-04-30 Release v0.1.5
 
 * Add support for events with numeric time (in seconds)
